@@ -23,4 +23,20 @@ def ban_user(message):
     else:
         bot.reply_to(message, "Эта команда должна быть использована в ответ на сообщение пользователя, которого вы хотите забанить.")
 
+
+
+@bot.message_handler(func=lambda message: True)
+def echo_message(message):
+    chat_id = message.chat.id
+    print(message)
+    user_id = message.from_user.id
+    user_status = bot.get_chat_member(chat_id, user_id).status
+    if 'https://' in message.text:
+        if user_status == 'administrator' or user_status == 'creator':
+            bot.reply_to(message, "Невозможно забанить администратора.")
+        else:
+            bot.ban_chat_member(chat_id, user_id) # пользователь с user_id будет забанен в чате с chat_id
+            bot.reply_to(message, f"Пользователь @{message.reply_to_message.from_user.username} был забанен.")
+    bot.reply_to(message, message.text) 
+
 bot.infinity_polling(none_stop=True)
